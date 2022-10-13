@@ -1,21 +1,23 @@
 #! /bin/bash
 
-# **********************************************************************
+# ***************************************************************************
 #  Ce script permet d'exporter des databases MySQL au format sql gzippé.
 #  Régis TEDONE <regis.tedone@gmail.com> SYRADEV©2022
-# **********************************************************************
+# ***************************************************************************
 
 TIMESTAMP=$(date +"%F")
-BACKUP_DIR="/home/regis/backup/$TIMESTAMP"
+BACKUP_DIR="/home/Your_Path/SQL/$TIMESTAMP"
 MYSQL_USER="root"
-MYSQL=/usr/bin/mysql
 MYSQL_PASSWORD="Your_Password"
+MYSQL=/usr/bin/mysql
 MYSQLDUMP=/usr/bin/mysqldump
 
-mkdir -p "$BACKUP_DIR/mysql"
+mkdir -p "$BACKUP_DIR"
 
-databases=`$MYSQL --user=$MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema)"`
+dataBases=`$MYSQL --user=$MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" | grep -Ev "(Database|mysql|sys|phpmyadmin|information_schema|performance_schema|test)"`
 
-for db in $databases; do
-  $MYSQLDUMP --force --opt --user=$MYSQL_USER -p$MYSQL_PASSWORD --databases $db | gzip > "$BACKUP_DIR/mysql/$db.gz"
+for db in $dataBases; do
+  $MYSQLDUMP --force --opt --user=$MYSQL_USER -p$MYSQL_PASSWORD --add-drop-database --databases $db | gzip > "$BACKUP_DIR/$db.sql.gz"
 done
+
+echo "Export $dataBases OK ;-)"
